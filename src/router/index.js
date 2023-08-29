@@ -1,18 +1,17 @@
 import { createRouter, createWebHistory } from 'vue-router'
-import HomeView from '../views/HomeView.vue'
+import TasksView from '../views/TasksView.vue'
 import LoginView from '../views/LoginView.vue'
 import RegisterView from '../views/RegisterView.vue'
 import { useStore } from '../stores/appStore'
 
-// const store = useStore();
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes: [
     {
       path: '/',
-      name: 'home',
-      component: HomeView,
+      name: 'tasks',
+      component: TasksView,
 
       beforeEnter: (to) => {
         const store = useStore()
