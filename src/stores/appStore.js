@@ -98,6 +98,11 @@ export const useStore = defineStore("appStore", {
       this.authenticated = true;
     },
 
+    logout() {
+      localStorage.removeItem('token');
+      this.setEmptyUser();
+    },
+
     setEmptyUser() {
       this.token = "";
       this.authenticated = false;

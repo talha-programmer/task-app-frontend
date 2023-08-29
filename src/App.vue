@@ -1,20 +1,26 @@
 <script setup lang="ts">
-import { RouterLink, RouterView } from 'vue-router'
-import HelloWorld from './components/HelloWorld.vue'
+import { RouterLink, RouterView, useRouter } from 'vue-router'
+import { useStore } from './stores/appStore';
+
+
+const store = useStore();
+const router = useRouter();
+
+function logout() {
+  store.logout();
+  router.push('/login');
+}
+
 </script>
 
 <template>
   <header>
-    <!-- <img alt="Vue logo" class="logo" src="@/assets/logo.svg" width="125" height="125" />
+    <div class="flex justify-end">
 
-    <div class="wrapper">
-      <HelloWorld msg="You did it!" />
-
-      <nav>
-        <RouterLink to="/">Home</RouterLink>
-        <RouterLink to="/about">About</RouterLink>
-      </nav>
-    </div> -->
+    <button @click="logout" class="px-3 py-1 -mr-1 bg-gray-600 focus:outline-none rounded-md hover:bg-gray-500 text-white">
+      Logout
+    </button>
+    </div>
   </header>
 
   <RouterView />
