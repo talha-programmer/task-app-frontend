@@ -18,12 +18,16 @@ app.mount("#app");
 
 const store = useStore();
 
-await store.verifyToken();
+store.verifyToken().then(() => {
+  if (store.token) {
+    // Axios configuration
+    axios.defaults.headers.common = {
+      Authorization: `Bearer ${store.token}`,
+      Accept: "application/json",
+    };
 
-// Axios configuration
-axios.defaults.headers.common = {
-  Authorization: `Bearer ${store.token}`,
-  Accept: "application/json",
-};
+    router.push("/");
+  }
+});
 
-axios.defaults.baseURL = process.env.VUE_APP_BACKEND_BASE_URL;
+
