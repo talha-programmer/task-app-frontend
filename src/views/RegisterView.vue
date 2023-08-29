@@ -1,4 +1,29 @@
+<script setup>
+import { ref } from 'vue';
+import { useStore } from '../stores/appStore';
+import { useRouter } from 'vue-router';
 
+const email = ref('');
+const password = ref('')
+const name = ref('')
+const store = useStore();
+const router = useRouter();
+
+const registerUser = async() => {
+    await store.registerUser({
+        email: email.value,
+        password: password.value,
+        name: name.value,
+    });
+
+    if(store.token) {
+        router.push('/');
+    } else {
+        alert('Error occurred while saving the user');
+    }
+}
+
+</script>
 
 
 <template>
@@ -13,14 +38,14 @@
           <div>
             <label for="email" class="block text-sm font-medium leading-6 text-white">Full Name</label>
             <div class="mt-2">
-              <input id="name" name="name" type="text" autocomplete="name" required="" class="block w-full rounded-md border-0 p-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6" />
+              <input id="name" v-model="name" name="name" type="text" autocomplete="name" required="" class="block w-full rounded-md border-0 p-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6" />
             </div>
           </div>
 
           <div>
             <label for="email" class="block text-sm font-medium leading-6 text-white">Email address</label>
             <div class="mt-2">
-              <input id="email" name="email" type="email" autocomplete="email" required="" class="block w-full rounded-md border-0 p-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6" />
+              <input id="email" v-model="email" name="email" type="email" autocomplete="email" required="" class="block w-full rounded-md border-0 p-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6" />
             </div>
           </div>
   
@@ -32,12 +57,12 @@
               </div>
             </div>
             <div class="mt-2">
-              <input id="password" name="password" type="password" autocomplete="current-password" required="" class="block w-full rounded-md border-0 p-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6" />
+              <input id="password" v-model="password" name="password" type="password" autocomplete="current-password" required="" class="block w-full rounded-md border-0 p-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6" />
             </div>
           </div>
   
           <div>
-            <button type="submit" class="flex w-full justify-center rounded-md bg-indigo-600 px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">Sign in</button>
+            <button type="button" @click="registerUser" class="flex w-full justify-center rounded-md bg-indigo-600 px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">Sign in</button>
           </div>
         </form>
   
