@@ -1,71 +1,107 @@
-import { ref, computed } from 'vue'
-import { defineStore } from 'pinia'
-import axios from 'axios'
-
-// export const useCounterStore = defineStore('counter', () => {
-//   const count = ref(0)
-//   const doubleCount = computed(() => count.value * 2)
-//   function increment() {
-//     count.value++
-//   }
-
-//   return { count, doubleCount, increment }
-// })
+import { ref, computed } from "vue";
+import { defineStore } from "pinia";
+import axios from "axios";
+import { useRouter } from "vue-router";
 
 
-export const useStore = defineStore('appStore', {
+axios.defaults.baseURL = import.meta.env.VITE_BACKEND_BASE_URL;
+
+export const useStore = defineStore("appStore", {
   state: () => {
     return {
-      token: '',
+      token: "",
       user: {},
       authenticated: false,
       tasks: [],
-    }
+    };
   },
-  
+
   actions: {
     async verifyToken() {
-
-      const token = localStorage.getItem('token');
-      // const baseUrl = process.env.VUE_APP_BACKEND_BASE_URL;
-      const baseUrl = "http://127.0.0.1:8000/api/v1";
-      await axios.get(`${baseUrl}/user`, {
+      const token = localStorage.getItem("token");
+      const response = await axios.get(`/user`, {
         headers: {
           Authorization: `Bearer ${token}`,
-          Accept: 'application/json',
-        }
-      }).then((response) => {
-        if(response.status == true) {
-          this.token = token;
-          this.authenticated = true;
-
-        } else {
-          this.token = '';
-          this.authenticated = false;
-        }
-      })
+          Accept: "application/json",
+        },
+      });
+      if (response.data.status == true) {
+        this.setUser(response.data.data.user, token);
+      } else {
+        this.setEmptyUser();
+      }
     },
 
     async loginUser(data) {
-      const baseUrl = "http://127.0.0.1:8000/api/v1";
-      await axios.post(`${baseUrl}/login`, data).then((response) => {
-        if(response.data.status == true) {
-          const data = {response};
-          this.token = data.token;
-          this.user = data.user;
-          this.authenticated = true;
-
-        } else {
-          this.token = '';
-          this.authenticated = false;
-          this.user = {};
-        }
-      })
+      await axios
+        .post(`/login`, data)
+        .then((response) => {
+          if (response.data.status == true) {
+            const data = response.data.data;
+            this.setUser(data.user, data.token);
+          } else {
+            this.setEmptyUser();
+          }
+        })
+        .catch((error) => {
+          console.log(error);
+        });
     },
 
-    setToken(token) {
-      localStorage.setItem('token', token);
+    async registerUser(data) {
+      await axios
+        .post(`/register`, data)
+        .then((response) => {
+          if (response.data.status == true) {
+            const data = response.data.data;
+            this.setUser(data.user, data.token);
+          } else {
+            this.setEmptyUser();
+          }
+        })
+        .catch((error) => {
+          console.log(error);
+        });
+    },
+
+    async getTasks(filter = "all") {
+      await axios
+        .get(`/tasks?filter=${filter}`)
+        .then((response) => {
+          if (response.data.status == true) {
+            this.tasks = response.data.data.tasks;
+          }
+        })
+        .catch((error) => {
+          console.log(error);
+        });
+    },
+
+    async saveTask(task) {
+      const response = await axios.post(`/tasks/save`, task).catch((error) => {
+        console.log(error);
+      });
+
+      return response.data?.data.task ;
+    },
+    async toggleTaskComplete(task) {
+      const response = await axios.post(`/tasks/completed`, {id: task.id}).catch((error) => {
+        console.log(error);
+      });
+
+      return response.data?.data.task ;
+    },
+    setUser(user, token) {
+      localStorage.setItem("token", token);
       this.token = token;
-    }
-  }
-})
+      this.user = user;
+      this.authenticated = true;
+    },
+
+    setEmptyUser() {
+      this.token = "";
+      this.authenticated = false;
+      this.user = {};
+    },
+  },
+});
